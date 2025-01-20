@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6-21</title>
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            background-color: #ccc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align items to the top */
+        }
+        iframe {
+            width: 100%;
+            height: 70%; /* Adjusted height to make room for the button */
+            border: none;
+        }
+        h1 {
+            text-align: center;
+            color: #111;
+            margin-bottom: 20px;
+            font-size: xx-large;
+        }
+        .button {
+            background-color: #3bd; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px 10px; /* Added margin for spacing */
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #55e; /* Darker green */
+        }
+        .container {
+            display: flex;
+            align-items: center; /* Align items vertically */
+            justify-content: center; /* Center horizontally */
+        }
+        .playback-bar {
+            margin-left: 10px; /* Space between button and playback bar */
+            width: 200px; /* Set a width for the playback bar */
+        }
+        .speed-selector {
+            margin-left: 10px; /* Space between playback bar and speed selector */
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <h1>Pages 50-69</h1>
+        <div class="container">
+            <button class="button" onclick="playAudio()">Read</button>
+            <button class="button" onclick="pauseAudio()">Pause</button>
+            <input type="range" class="playback-bar" id="playback" value="0" min="0" max="100" step="1" onchange="setAudioTime()">
+            <select class="speed-selector" id="speed" onchange="changeSpeed()">
+                <option value="1">1x</option>
+                <option value="2">2x</option>
+            </select>
+        </div>
+    </section>
+    <iframe src="69.pdf" title="PDF Document"></iframe>
+    
+    <!-- Audio element -->
+    <audio id="audio" src="combined.wav.wav"></audio>
+
+    <script>
+        var audio = document.getElementById('audio');
+        var playback = document.getElementById('playback');
+
+        audio.addEventListener('loadedmetadata', function() {
+            playback.max = audio.duration; // Set the max value of the playback bar to the audio duration
+        });
+
+        audio.addEventListener('timeupdate', function() {
+            playback.value = audio.currentTime; // Update the playback bar as the audio plays
+        });
+
+        function playAudio() {
+            audio.play();
+        }
+
+        function pauseAudio() {
+            audio.pause();
+        }
+
+        function setAudioTime() {
+            audio.currentTime = playback.value; // Set the audio current time based on the playback bar
+        }
+
+        function changeSpeed() {
+            var speed = document.getElementById('speed').value;
+            audio.playbackRate = speed; // Change the playback speed
+        }
+    </script>
+</body>
+</html>
