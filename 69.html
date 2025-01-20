@@ -12,11 +12,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Align items to the top */
+            justify-content: flex-start;
         }
         iframe {
             width: 100%;
-            height: 70%; /* Adjusted height to make room for the button */
+            height: 70%;
             border: none;
         }
         h1 {
@@ -26,7 +26,7 @@
             font-size: xx-large;
         }
         .button {
-            background-color: #3bd; /* Green */
+            background-color: #3bd;
             border: none;
             color: white;
             padding: 15px 32px;
@@ -34,25 +34,35 @@
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
-            margin: 20px 10px; /* Added margin for spacing */
+            margin: 20px 10px;
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s;
         }
+        .skip-button {
+            padding: 15px 20px;
+            font-size: 14px;
+        }
         .button:hover {
-            background-color: #55e; /* Darker green */
+            background-color: #55e;
         }
         .container {
             display: flex;
-            align-items: center; /* Align items vertically */
-            justify-content: center; /* Center horizontally */
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         .playback-bar {
-            margin-left: 10px; /* Space between button and playback bar */
-            width: 200px; /* Set a width for the playback bar */
+            margin: 0 10px;
+            width: 200px;
         }
         .speed-selector {
-            margin-left: 10px; /* Space between playback bar and speed selector */
+            margin-left: 10px;
+        }
+        .time-display {
+            font-family: monospace;
+            margin: 0 10px;
+            color: #333;
         }
     </style>
 </head>
@@ -60,30 +70,50 @@
     <section>
         <h1>Pages 50-69</h1>
         <div class="container">
+            <button class="button skip-button" onclick="skip(-10)">-10s</button>
             <button class="button" onclick="playAudio()">Read</button>
             <button class="button" onclick="pauseAudio()">Pause</button>
-            <input type="range" class="playback-bar" id="playback" value="0" min="0" max="100" step="1" onchange="setAudioTime()">
+            <button class="button skip-button" onclick="skip(10)">+10s</button>
+            <span class="time-display" id="current-time">0:00</span>
+            <input type="range" class="playback-bar" id="playback" value="0" min="0" max="100" step="1" 
+                   oninput="updateTimeDisplay(this.value)" onchange="setAudioTime()">
+            <span class="time-display" id="duration">0:00</span>
             <select class="speed-selector" id="speed" onchange="changeSpeed()">
                 <option value="1">1x</option>
+                <option value="1.5">1.5x</option>
                 <option value="2">2x</option>
             </select>
         </div>
     </section>
     <iframe src="69.pdf" title="PDF Document"></iframe>
-    
+   
     <!-- Audio element -->
     <audio id="audio" src="69.mp3"></audio>
-
     <script>
         var audio = document.getElementById('audio');
         var playback = document.getElementById('playback');
+        var currentTimeDisplay = document.getElementById('current-time');
+        var durationDisplay = document.getElementById('duration');
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Update time display while dragging
+        function updateTimeDisplay(value) {
+            currentTimeDisplay.textContent = formatTime(value);
+        }
 
         audio.addEventListener('loadedmetadata', function() {
-            playback.max = audio.duration; // Set the max value of the playback bar to the audio duration
+            playback.max = audio.duration;
+            durationDisplay.textContent = formatTime(audio.duration);
         });
 
         audio.addEventListener('timeupdate', function() {
-            playback.value = audio.currentTime; // Update the playback bar as the audio plays
+            playback.value = audio.currentTime;
+            currentTimeDisplay.textContent = formatTime(audio.currentTime);
         });
 
         function playAudio() {
@@ -95,12 +125,16 @@
         }
 
         function setAudioTime() {
-            audio.currentTime = playback.value; // Set the audio current time based on the playback bar
+            audio.currentTime = playback.value;
         }
 
         function changeSpeed() {
             var speed = document.getElementById('speed').value;
-            audio.playbackRate = speed; // Change the playback speed
+            audio.playbackRate = parseFloat(speed);
+        }
+
+        function skip(seconds) {
+            audio.currentTime = Math.max(0, Math.min(audio.currentTime + seconds, audio.duration));
         }
     </script>
 </body>
